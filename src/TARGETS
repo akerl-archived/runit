@@ -109,6 +109,7 @@ stralloc_pend.o
 strerr_die.o
 strerr_sys.o
 subgetopt.o
+env
 sysdeps
 systype
 tai_now.o

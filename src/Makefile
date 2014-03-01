@@ -185,7 +185,7 @@ choose: choose.sh warn-auto.sh
 coe.o: coe.c coe.h compile
 	./compile coe.c
 
-compile: conf-cc print-cc.sh systype warn-auto.sh
+compile: conf-cc print-cc.sh env systype warn-auto.sh
 	rm -f compile
 	sh print-cc.sh > compile
 	chmod 555 compile
@@ -246,7 +246,7 @@ iopause.h: choose compile iopause.h1 iopause.h2 load trypoll.c
 iopause.o: compile iopause.c iopause.h select.h tai.h taia.h uint64.h
 	./compile iopause.c
 
-load: conf-ld print-ld.sh systype warn-auto.sh
+load: conf-ld env print-ld.sh systype warn-auto.sh
 	rm -f load
 	sh print-ld.sh > load
 	chmod 555 load
@@ -390,8 +390,12 @@ uint64.h reboot_system.h uw_tmp.h socket.lib
 	grep sysdep uw_tmp.h >>sysdeps
 	cat sysdeps
 
+
 systype: find-systype.sh trycpp.c x86cpuid.c
 	sh find-systype.sh > systype
+
+env: env.sh systype
+	sh env.sh > env
 
 tai_now.o: compile tai.h tai_now.c uint64.h
 	./compile tai_now.c
