@@ -1,9 +1,25 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
+#include <errno.h>
 #include "uidgid.h"
 #include "str.h"
 #include "scan.h"
+
+void uidgids_get_ext(struct uidgid *ugid, char * user, unsigned int ext) {
+  if (ext) {
+    if (! uidgids_get(ugid, user)) {
+      if (*user == ':') fatalx("invalid uid/gids", user +1);
+      if (errno) fatal("unable to get password/group file entry");
+      fatalx("unknown user/group", user);
+    }
+  } else {
+    if (! uidgid_get(ugid, user)) {
+      if (errno) fatal("unable to get password file entry");
+      fatalx("unknown account", user);
+    }
+  }
+}
 
 /* user */
 unsigned int uidgid_get(struct uidgid *u, char *ug) {
@@ -13,6 +29,7 @@ unsigned int uidgid_get(struct uidgid *u, char *ug) {
   u->gid[0] =pwd->pw_gid; u->gids =1;
   u->uid =pwd->pw_uid;
   u->home =pwd->pw_dir;
+  u->user =pwd->pw_name;
   return(1);
 }
 

@@ -8,7 +8,10 @@ struct uidgid {
   gid_t gid[61];
   int gids;
   char *home;
+  char *user;
 };
+
+extern void uidgids_get_ext(struct uidgid *ugid, char * user, unsigned int ext);
 
 /* user */
 extern unsigned int uidgid_get(struct uidgid *, char *);

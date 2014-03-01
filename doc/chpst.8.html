@@ -23,6 +23,9 @@ and runs <i>prog</i>.
 
 <dl>
 
+<dt><b>-A <i>[:]user[:group]</b> </i></dt>
+<dd>Same as <i>-u [:]user:[group] -U [:]user[:group] -H [:]user -S [:]user</i></dd>
+
 <dt><b>-u <i>[:]user[:group]</b> </i></dt>
 <dd>setuidgid. Set uid and gid to the
 <i>user</i>&rsquo;s uid and gid, as found in <i>/etc/passwd</i>. If <i>user</i> is followed by a colon
@@ -39,6 +42,20 @@ variables $UID and $GID to the <i>user</i>&rsquo;s uid and gid, as found in <i>/
 If <i>user</i> is followed by a colon and a <i>group</i>, set $GID to the <i>group</i>&rsquo;s gid,
 as found in <i>/etc/group</i>, instead of <i>user</i>&rsquo;s gid. If <i>user</i> is prefixed with a
 colon, the <i>user</i> and <i>group</i> arguments are interpreted as uid and gid respectivly,
+and not looked up in the password or group file. </dd>
+
+<dt><b>-H <i>[:]user</b> </i></dt>
+<dd>Set the environment
+variable $HOME to that of <i>user</i>, as found in <i>/etc/passwd</i>.
+If <i>user</i> is prefixed with a
+colon, the <i>user</i> is interpreted as a uid,
+and not looked up in the password or group file. </dd>
+
+<dt><b>-S <i>[:]user</b> </i></dt>
+<dd>Set the environment
+variable $USER to that of <i>user</i>, as found in <i>/etc/passwd</i>.
+If <i>user</i> is prefixed with a
+colon, the <i>user</i> is interpreted as a uid,
 and not looked up in the password or group file. </dd>
 
 <dt><b>-b <i>argv0</b> </i></dt>

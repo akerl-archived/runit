@@ -21,7 +21,7 @@
 #include "openreadclose.h"
 #include "direntry.h"
 
-#define USAGE_MAIN " [-vP012] [-u user[:group]] [-U user[:group]] [-b argv0] [-e dir] [-/ root] [-n nice] [-l|-L lock] [-m n] [-d n] [-o n] [-p n] [-f n] [-c n] prog"
+#define USAGE_MAIN " [-vP012] [-A [:]user[:group]] [-H [:]user] [-S [:]user] [-u [:]user[:group]] [-U [:]user[:group]] [-b argv0] [-e dir] [-/ root] [-n nice] [-l|-L lock] [-m n] [-d n] [-o n] [-p n] [-f n] [-c n] prog"
 #define FATAL "chpst: fatal: "
 #define WARNING "chpst: warning: "
 
@@ -48,6 +48,9 @@ unsigned int pgrp =0;
 unsigned int nostdin =0;
 unsigned int nostdout =0;
 unsigned int nostderr =0;
+char *all_user =0;
+char *home_user =0;
+char *user_user =0;
 long limitd =-2;
 long limits =-2;
 long limitl =-2;
@@ -65,49 +68,36 @@ unsigned int lockdelay;
 
 void suidgid(char *user, unsigned int ext) {
   struct uidgid ugid;
-  char uid_str[21];
 
-  if (ext) {
-    if (! uidgids_get(&ugid, user)) {
-      if (*user == ':') fatalx("invalid uid/gids", user +1);
-      if (errno) fatal("unable to get password/group file entry");
-      fatalx("unknown user/group", user);
-    }
-  }
-  else
-    if (! uidgid_get(&ugid, user)) {
-      if (errno) fatal("unable to get password file entry");
-      fatalx("unknown account", user);
-    }
+  uidgids_get_ext(&ugid, user, ext);
   if (setgroups(ugid.gids, ugid.gid) == -1) fatal("unable to setgroups");
   if (setgid(*ugid.gid) == -1) fatal("unable to setgid");
   if (prot_uid(ugid.uid) == -1) fatal("unable to setuid");
-  if (setenv("HOME", ugid.home, 1) == -1) fatal("unable to set HOME");
-  if (setenv("USER", user, 1) == -1) fatal("unable to set USER");
-  sprintf(uid_str, "%d", ugid.uid);
-  if (setenv("UID", uid_str, 1) == -1) fatal("unable to set UID");
 }
 
 void euidgid(char *user, unsigned int ext) {
   struct uidgid ugid;
   char bufnum[FMT_ULONG];
 
-  if (ext) {
-    if (! uidgids_get(&ugid, user)) {
-      if (*user == ':') fatalx("invalid uid/gids", user +1);
-      if (errno) fatal("unable to get password/group file entry");
-      fatalx("unknown user/group", user);
-    }
-  }
-  else
-    if (! uidgid_get(&ugid, user)) {
-      if (errno) fatal("unable to get password file entry");
-      fatalx("unknown account", user);
-    }
+  uidgids_get_ext(&ugid, user, ext);
   bufnum[fmt_ulong(bufnum, *ugid.gid)] =0;
   if (! pathexec_env("GID", bufnum)) die_nomem();
   bufnum[fmt_ulong(bufnum, ugid.uid)] =0;
   if (! pathexec_env("UID", bufnum)) die_nomem();
+}
+
+void sethome(char *user, unsigned int ext) {
+  struct uidgid ugid;
+
+  uidgids_get_ext(&ugid, user, ext);
+  if (setenv("HOME", ugid.home, 1) == -1) fatal("unable to set HOME");
+}
+
+void setuser(char *user, unsigned int ext) {
+  struct uidgid ugid;
+
+  uidgids_get_ext(&ugid, user, ext);
+  if (setenv("USER", ugid.user, 1) == -1) fatal("unable to set USER");
 }
 
 void edir(const char *dirname) {
@@ -292,11 +282,14 @@ int main(int argc, const char **argv) {
   if (str_equal(progname, "setlock")) setlock(argc, argv);
   if (str_equal(progname, "softlimit")) softlimit(argc, argv);
 
-  while ((opt =getopt(argc, argv, "u:U:b:e:m:d:o:p:f:c:r:t:/:n:l:L:vP012V"))
+  while ((opt =getopt(argc, argv, "A:u:U:H:S:b:e:m:d:o:p:f:c:r:t:/:n:l:L:vP012V"))
          != opteof)
     switch(opt) {
+    case 'A': all_user =(char*)optarg; break;
     case 'u': set_user =(char*)optarg; break;
     case 'U': env_user =(char*)optarg; break;
+    case 'H': home_user =(char*)optarg; break;
+    case 'S': user_user =(char*)optarg; break;
     case 'b': argv0 =(char*)optarg; break;
     case 'e': env_dir =optarg; break;
     case 'm':
@@ -346,8 +339,14 @@ int main(int argc, const char **argv) {
     errno =0;
     if (nice(nicelvl) == -1) if (errno) fatal("unable to set nice level");
   }
+  if (!home_user) home_user = all_user;
+  if (!user_user) user_user = all_user;
+  if (!env_user) env_user = all_user;
+  if (!set_user) set_user = all_user;
   if (env_user) euidgid(env_user, 1);
   if (set_user) suidgid(set_user, 1);
+  if (home_user) sethome(home_user, 1);
+  if (user_user) setuser(user_user, 1);
   if (lock) slock(lock, lockdelay, 0);
   if (nostdin) if (close(0) == -1) fatal("unable to close stdin");
   if (nostdout) if (close(1) == -1) fatal("unable to close stdout");
