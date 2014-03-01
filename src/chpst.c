@@ -3,6 +3,7 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include "sgetopt.h"
 #include "error.h"
 #include "strerr.h"
@@ -64,6 +65,7 @@ unsigned int lockdelay;
 
 void suidgid(char *user, unsigned int ext) {
   struct uidgid ugid;
+  char uid_str[21];
 
   if (ext) {
     if (! uidgids_get(&ugid, user)) {
@@ -80,6 +82,10 @@ void suidgid(char *user, unsigned int ext) {
   if (setgroups(ugid.gids, ugid.gid) == -1) fatal("unable to setgroups");
   if (setgid(*ugid.gid) == -1) fatal("unable to setgid");
   if (prot_uid(ugid.uid) == -1) fatal("unable to setuid");
+  if (setenv("HOME", ugid.home, 1) == -1) fatal("unable to set HOME");
+  if (setenv("USER", user, 1) == -1) fatal("unable to set USER");
+  sprintf(uid_str, "%d", ugid.uid);
+  if (setenv("UID", uid_str, 1) == -1) fatal("unable to set UID");
 }
 
 void euidgid(char *user, unsigned int ext) {

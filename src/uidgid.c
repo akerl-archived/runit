@@ -12,6 +12,7 @@ unsigned int uidgid_get(struct uidgid *u, char *ug) {
   if (! (pwd =getpwnam(ug))) return(0);
   u->gid[0] =pwd->pw_gid; u->gids =1;
   u->uid =pwd->pw_uid;
+  u->home =pwd->pw_dir;
   return(1);
 }
 
