@@ -1,2 +1,48 @@
 command
-compile
+/deps
+
+# build helpers
+/src/load
+/src/compile
+/src/makelib
+/src/env
+/src/systype
+/src/sysdeps
+
+# intermediate products
+/src/*.o
+/src/*.a
+/src/*.lib
+/src/*.exe
+/src/*.dll
+/src/*.so
+
+# generated headers
+/src/direntry.h
+/src/hasflock.h
+/src/hasmkffo.h
+/src/hassgact.h
+/src/hassgprm.h
+/src/hasshsgr.h
+/src/haswaitp.h
+/src/iopause.h
+/src/reboot_system.h
+/src/uint64.h
+/src/uw_tmp.h
+
+# targets
+/src/chpst
+/src/chkshsgr
+/src/sv
+/src/choose
+/src/runit
+/src/runit-init
+/src/runsv
+/src/runsvchdir
+/src/runsvdir
+/src/select.h
+/src/svlogd
+/src/sysdeps
+/src/systype
+/src/utmpset
+
