@@ -1,0 +1,6 @@
+#!/bin/sh
+set -x
+cd "$(cd "$(dirname "$0")"; pwd)"
+cd ..
+audit/flawfinder/run
+audit/find_scary_functions src

@@ -46,3 +46,4 @@ command
 /src/systype
 /src/utmpset
 
+/audit/flawfinder/flawfinder-1.27*

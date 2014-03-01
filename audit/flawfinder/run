@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# require python
+set -e
+set -x
+SCRIPT_DIR="$(cd "$(dirname "$0")"; pwd)"
+cd "$SCRIPT_DIR"
+if [ ! -e flawfinder-1.27.tar.gz ]; then
+  curl -LO http://www.dwheeler.com/flawfinder/flawfinder-1.27.tar.gz
+fi
+if [ ! -d flawfinder-1.27 ]; then
+  tar xf flawfinder-1.27.tar.gz
+fi
+cd ../..
+"$SCRIPT_DIR"/flawfinder-1.27/flawfinder src

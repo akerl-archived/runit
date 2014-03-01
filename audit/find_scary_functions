@@ -1,0 +1,11 @@
+#!/bin/sh
+SCARY_FUNCTIONS='gets strcat strcpy'
+
+SCARY_FUNCTIONS_NAME_REGEX="($(echo $SCARY_FUNCTIONS | tr ' ' '|'))"
+SCARY_FUNCTIONS_REGEX="(^|[^a-z_]*)$SCARY_FUNCTIONS_NAME_REGEX\\("
+
+echo "find_scary_functions: start"
+for FILE in "$1"/*; do
+  egrep -Hn "$SCARY_FUNCTIONS_REGEX" "$FILE" | egrep "$SCARY_FUNCTIONS_NAME_REGEX"
+done
+echo "find_scary_functions: end"
