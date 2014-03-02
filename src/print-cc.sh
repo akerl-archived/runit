@@ -3,4 +3,5 @@ systype="`cat systype`"
 
 cat warn-auto.sh
 cat env
-echo exec "$cc" '-c ${1+"$@"}'
+./tests
+echo exec "$cc" \$CPPFLAGS \$CFLAGS '-c ${1+"$@"}'

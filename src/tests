@@ -1,0 +1,6 @@
+#!/bin/sh
+for TEST in test_*.sh; do
+  if [ -x "$TEST" ]; then
+    ./"$TEST"
+  fi
+done

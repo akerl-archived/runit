@@ -1,6 +1,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#ifdef HAVE_NANOSLEEP
+#include <time.h>
+#endif
 #include "str.h"
 #include "strerr.h"
 #include "error.h"
@@ -267,6 +270,9 @@ int control(char *a) {
 int main(int argc, char **argv) {
   unsigned int i, done;
   char *x;
+#ifdef HAVE_NANOSLEEP
+  struct timespec rqtp;
+#endif
 
   progname =*argv;
   for (i =str_len(*argv); i; --i) if ((*argv)[i -1] == '/') break;
@@ -380,7 +386,13 @@ int main(int argc, char **argv) {
           fatal("unable to change to original directory");
       }
       if (done) break;
+#ifdef HAVE_NANOSLEEP
+      rqtp.tv_sec = 0;
+      rqtp.tv_nsec = 420000 * 1000;
+      nanosleep(&rqtp, NULL);
+#else
       usleep(420000);
+#endif
       taia_now(&tnow);
     }
   return(rc > 99 ? 99 : rc);
