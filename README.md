@@ -1,4 +1,4 @@
-**Deprecation Notice:** I am no longer updating this with new runit releases, as I've switched to using [s6](https://github.com/akerl/s6) for my systems.
+**Inactive Project:** I am no longer updating this with new runit releases, as I've switched to using [s6](https://github.com/akerl/s6) for my systems.
 
 runit
 =========
